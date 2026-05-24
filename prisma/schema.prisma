@@ -1,0 +1,133 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  role      String   @default("BUYER")
+  avatar    String?
+  phone     String?
+  address   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  products Product[]
+  orders   Order[]
+  reviews  Review[]
+
+  @@map("users")
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  image     String?
+  createdAt DateTime @default(now())
+
+  products     Product[]
+  translations CategoryTranslation[]
+
+  @@map("categories")
+}
+
+model CategoryTranslation {
+  id          String  @id @default(cuid())
+  categoryId  String
+  locale      String // 'kg', 'ru', 'en'
+  name        String
+  description String?
+
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([categoryId, locale])
+  @@map("category_translations")
+}
+
+model Product {
+  id         String   @id @default(cuid())
+  slug       String   @unique
+  price      Float
+  stock      Int      @default(0)
+  images     String   @default("[]")
+  isActive   Boolean  @default(true)
+  sellerId   String
+  categoryId String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  seller       User                 @relation(fields: [sellerId], references: [id])
+  category     Category             @relation(fields: [categoryId], references: [id])
+  translations ProductTranslation[]
+  orderItems   OrderItem[]
+  reviews      Review[]
+
+  @@index([sellerId])
+  @@index([categoryId])
+  @@index([isActive])
+  @@map("products")
+}
+
+model ProductTranslation {
+  id          String  @id @default(cuid())
+  productId   String
+  locale      String
+  name        String
+  description String?
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, locale])
+  @@map("product_translations")
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  buyerId         String
+  total           Float
+  status          String      @default("PENDING")
+  shippingAddress String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  buyer User        @relation(fields: [buyerId], references: [id])
+  items OrderItem[]
+
+  @@index([buyerId])
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  productId String
+  quantity  Int
+  price     Float
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+
+  @@map("order_items")
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int // 1-5
+  comment   String?
+  userId    String
+  productId String
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id])
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@map("reviews")
+}
