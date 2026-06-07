@@ -22,10 +22,24 @@ app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" },
 }));
 
-// CORS
+// CORS — allow localhost, the configured frontend URL, and any *.vercel.app
+// (Vercel gives every deploy/preview a unique subdomain)
+const isAllowedOrigin = (origin?: string): boolean => {
+  if (!origin) return true; // non-browser clients (curl, server-to-server)
+  if (origin === process.env.FRONTEND_URL) return true;
+  try {
+    const { hostname, protocol } = new URL(origin);
+    if (hostname === "localhost") return true;
+    if (protocol === "https:" && hostname.endsWith(".vercel.app")) return true;
+  } catch {
+    return false;
+  }
+  return false;
+};
+
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:3000",
+    origin: (origin, callback) => callback(null, isAllowedOrigin(origin)),
     credentials: true,
   })
 );
