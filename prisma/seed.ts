@@ -113,6 +113,7 @@ async function main() {
       price: 800,
       stock: 50,
       categorySlug: "honey",
+      images: ["https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=800&q=80"],
       translations: [
         { locale: "ru", name: "Горный мёд 1кг", description: "Натуральный горный мёд из Иссык-Кульской области. Собран на альпийских лугах." },
         { locale: "en", name: "Mountain Honey 1kg", description: "Natural mountain honey from Issyk-Kul region. Collected from alpine meadows." },
@@ -124,6 +125,7 @@ async function main() {
       price: 1500,
       stock: 30,
       categorySlug: "felt",
+      images: ["https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=800&q=80"],
       translations: [
         { locale: "ru", name: "Войлочные тапочки ручной работы", description: "Тёплые тапочки из натурального войлока с кыргызским орнаментом." },
         { locale: "en", name: "Handmade Felt Slippers", description: "Warm slippers from natural felt with Kyrgyz ornament." },
@@ -135,6 +137,7 @@ async function main() {
       price: 350,
       stock: 100,
       categorySlug: "dairy",
+      images: ["https://images.unsplash.com/photo-1452195100486-9cc805987862?w=800&q=80"],
       translations: [
         { locale: "ru", name: "Курут (сушёный сыр)", description: "Традиционный курут из козьего молока." },
         { locale: "en", name: "Kurt (Dried Cheese)", description: "Traditional kurt from goat milk." },
@@ -146,6 +149,7 @@ async function main() {
       price: 450,
       stock: 75,
       categorySlug: "herbs",
+      images: ["https://images.unsplash.com/photo-1556881286-fc6915169721?w=800&q=80"],
       translations: [
         { locale: "ru", name: "Горный травяной чай", description: "Сбор горных трав: чабрец, зверобой, мята. 100г." },
         { locale: "en", name: "Mountain Herbal Tea", description: "Mountain herb collection: thyme, St. John's wort, mint. 100g." },
@@ -157,6 +161,7 @@ async function main() {
       price: 5000,
       stock: 10,
       categorySlug: "felt",
+      images: ["https://images.unsplash.com/photo-1600166898405-da9535204843?w=800&q=80"],
       translations: [
         { locale: "ru", name: "Шырдак (войлочный ковёр)", description: "Традиционный кыргызский шырдак ручной работы. 150x200 см." },
         { locale: "en", name: "Shyrdak Felt Rug", description: "Traditional Kyrgyz handmade shyrdak. 150x200 cm." },
@@ -168,6 +173,7 @@ async function main() {
       price: 650,
       stock: 40,
       categorySlug: "honey",
+      images: ["https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?w=800&q=80"],
       translations: [
         { locale: "ru", name: "Мёд из диких цветов 500г", description: "Ароматный мёд из полевых цветов Чуйской долины." },
         { locale: "en", name: "Wild Flower Honey 500g", description: "Aromatic honey from wildflowers of Chuy Valley." },
@@ -184,14 +190,16 @@ async function main() {
 
     await prisma.product.upsert({
       where: { slug: prod.slug },
-      update: {},
+      update: {
+        images: JSON.stringify(prod.images ?? []),
+      },
       create: {
         slug: prod.slug,
         price: prod.price,
         stock: prod.stock,
         sellerId: seller.id,
         categoryId: category.id,
-        images: "[]",
+        images: JSON.stringify(prod.images ?? []),
         translations: { create: prod.translations },
       },
     });
