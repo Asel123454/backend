@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: craft-organic-backend
+    runtime: node
+    plan: free
+    region: frankfurt
+    branch: main
+    buildCommand: npm install && npx prisma generate && npx prisma db push --accept-data-loss && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      # Заполни эти переменные в дашборде Render (Environment):
+      - key: DATABASE_URL
+        sync: false   # строка подключения из Neon
+      - key: JWT_SECRET
+        sync: false   # любой длинный секрет
+      - key: JWT_EXPIRES_IN
+        value: "7d"
+      - key: FRONTEND_URL
+        sync: false   # URL фронтенда на Vercel, напр. https://your-app.vercel.app
