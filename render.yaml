@@ -23,3 +23,5 @@ services:
         value: "7d"
       - key: FRONTEND_URL
         sync: false   # URL фронтенда на Vercel, напр. https://your-app.vercel.app
+      - key: CLOUDINARY_URL
+        sync: false   # cloudinary://api_key:api_secret@cloud_name (из дашборда Cloudinary)
