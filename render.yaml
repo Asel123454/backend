@@ -5,7 +5,10 @@ services:
     plan: free
     region: frankfurt
     branch: main
-    buildCommand: npm install && npm run build
+    # db push держит схему БД в синхроне с schema.prisma на каждом деплое.
+    # Без --accept-data-loss: если миграция требует потери данных, деплой
+    # упадёт (а не молча удалит данные) — это сигнал сделать миграцию вручную.
+    buildCommand: npm install && npx prisma generate && npx prisma db push && npm run build
     startCommand: npm start
     healthCheckPath: /api/health
     envVars:
